@@ -390,8 +390,8 @@
             <input type="text" id="signupId" placeholder="Student ID">
             <input type="text" id="signupName" placeholder="Full Name">
             <input type="text" id="signupCourse" placeholder="Course">
-            <input type="number" id="signupYear" placeholder="Year Level">
-            <input type="number" id="signupAge" placeholder="Age">
+            <input type="number" id="signupYear" placeholder="Year Level (1-4)" min="1" max="4" oninput="validateYear(this)">
+            <input type="number" id="signupAge" placeholder="Age (Max 50)" min="1" max="50" oninput="validateAge(this)">
             <input type="password" id="signupPassword" placeholder="Create Password">
             <button onclick="signup()">Create Account</button>
             <p class="link" onclick="showLogin()">Already have account? Login</p>
@@ -441,8 +441,8 @@
         <input type="text" id="editId" placeholder="Student ID">
         <input type="text" id="editName" placeholder="Full Name">
         <input type="text" id="editCourse" placeholder="Course">
-        <input type="number" id="editYear" placeholder="Year Level">
-        <input type="number" id="editAge" placeholder="Age">
+        <input type="number" id="editYear" placeholder="Year Level (1-4)" min="1" max="4" oninput="validateYear(this)">
+        <input type="number" id="editAge" placeholder="Age (Max 50)" min="1" max="50" oninput="validateAge(this)">
         <div class="modal-buttons">
             <button onclick="saveEdit()">Save</button>
             <button class="cancel-btn" onclick="closeModal()">Cancel</button>
@@ -473,6 +473,17 @@
         }
     };
 
+    // Validation functions for year and age caps
+    function validateYear(input) {
+        if(input.value > 4) input.value = 4;
+        if(input.value < 1 && input.value !== "") input.value = 1;
+    }
+
+    function validateAge(input) {
+        if(input.value > 50) input.value = 50;
+        if(input.value < 1 && input.value !== "") input.value = 1;
+    }
+
     function showSignup() {
         document.getElementById("loginSection").style.display = "none";
         document.getElementById("signupSection").style.display = "block";
@@ -495,6 +506,19 @@
 
         if(id === "" || name === "" || course === "" || year === "" || age === "" || password === "") {
             document.getElementById("message").innerText = "Fill in all fields!";
+            document.getElementById("message").style.color = "#dc3545";
+            return;
+        }
+
+        // Validate year and age caps
+        if(parseInt(year) > 4 || parseInt(year) < 1) {
+            document.getElementById("message").innerText = "Year level must be between 1 and 4!";
+            document.getElementById("message").style.color = "#dc3545";
+            return;
+        }
+
+        if(parseInt(age) > 50 || parseInt(age) < 1) {
+            document.getElementById("message").innerText = "Age must be between 1 and 50!";
             document.getElementById("message").style.color = "#dc3545";
             return;
         }
@@ -632,78 +656,4 @@
         
         let newId = document.getElementById("editId").value.trim();
         let oldId = currentUserId;
-        
-        if(newId === "") {
-            alert("Student ID cannot be empty!");
-            return;
-        }
-        
-        if(newId !== oldId) {
-            let existingStudent = students.find(s => s.id === newId);
-            if(existingStudent) {
-                alert("Student ID already exists! Please choose a different one.");
-                return;
-            }
-        }
-        
-        let studentIndex = students.findIndex(s => s.id === oldId);
-        
-        if(studentIndex !== -1) {
-            students[studentIndex] = {
-                id: newId,
-                name: document.getElementById("editName").value,
-                course: document.getElementById("editCourse").value,
-                year: document.getElementById("editYear").value,
-                age: document.getElementById("editAge").value
-            };
-            
-            account.id = newId;
-            account.name = document.getElementById("editName").value;
-            account.course = document.getElementById("editCourse").value;
-            account.year = document.getElementById("editYear").value;
-            account.age = document.getElementById("editAge").value;
-            
-            localStorage.setItem("students", JSON.stringify(students));
-            localStorage.setItem("studentAccount", JSON.stringify(account));
-            
-            currentUserId = newId;
-            localStorage.setItem("currentUserId", newId);
-            
-            renderTable();
-            closeModal();
-        }
-    }
-
-    function openDeleteModal() {
-        document.getElementById("deleteModal").style.display = "flex";
-    }
-
-    function closeDeleteModal() {
-        document.getElementById("deleteModal").style.display = "none";
-    }
-
-    function confirmDelete() {
-        let students = JSON.parse(localStorage.getItem("students")) || [];
-        students = students.filter(s => s.id !== currentUserId);
-        
-        localStorage.setItem("students", JSON.stringify(students));
-        localStorage.removeItem("studentAccount");
-        localStorage.removeItem("loggedIn");
-        localStorage.removeItem("currentUserId");
-        currentUserId = null;
-        
-        closeDeleteModal();
-        showAuth();
-        document.getElementById("message").style.color = "green";
-        document.getElementById("message").innerText = "Account deleted successfully";
-    }
-
-    window.onclick = function(event) {
-        if(event.target.classList.contains("modal")) {
-            event.target.style.display = "none";
-        }
-    }
-</script>
-
-</body>
-</html>
+        let newYear = doc
